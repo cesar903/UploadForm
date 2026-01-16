@@ -1,5 +1,6 @@
-// app/layout.tsx
 import { ModeToggle } from "@/components/mode-toggle";
+import { Toolbar } from "./toolbar/Toolbar";
+import { TourApp } from "./tourApp/components/TourApp";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FileProvider } from "@/app/context/FileContext";
 import "./globals.css";
@@ -14,14 +15,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="flex items-center gap-2 font-bold text-xl">
                 <span>Layout Base</span>
               </div>
-
-              <ModeToggle />
+              <Toolbar />
             </div>
           </header>
-
           <main className="max-w-7xl mx-auto p-6">
             <FileProvider>
               {children}
+              <TourApp />
             </FileProvider>
           </main>
         </ThemeProvider>

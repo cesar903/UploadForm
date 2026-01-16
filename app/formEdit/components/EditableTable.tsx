@@ -19,7 +19,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { tableStyles } from '../style/styles'
 import 'handsontable/dist/handsontable.full.min.css';
 
 registerAllModules();
@@ -94,12 +94,13 @@ export default function EditableTable() {
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button
+                            id='step-table-reset'
                             variant="outline"
                             size="sm"
                             className="flex items-center justify-center gap-2 text-muted-foreground hover:text-destructive hover:border-destructive transition-all w-full sm:w-auto"
                         >
                             <RotateCcw size={16} />
-                            Resetar Tabela
+                            Restaurar Tabela
                         </Button>
                     </AlertDialogTrigger>
 
@@ -124,7 +125,7 @@ export default function EditableTable() {
                 </AlertDialog>
             </div>
 
-            <div className="rounded-lg border border-border overflow-hidden shadow-sm">
+            <div id="step-table-area" className="rounded-lg border border-border overflow-hidden shadow-sm">
                 {tableData.length > 0 ? (
                     <div className="custom-hot-wrapper">
                         <HotTable
@@ -180,53 +181,7 @@ export default function EditableTable() {
                 </div>
             </div>
 
-            <style jsx global>{`
-                
-                body:has([data-slot="alert-dialog-content"]) .custom-hot-wrapper {
-                    filter: blur(4px);
-                    transition: filter 0.2s ease;
-                }
-                
-                .custom-hot-table th {
-                    background-color: var(--muted) !important; 
-                    color: var(--muted-foreground) !important;
-                    font-size: 12px !important;
-                    text-transform: uppercase !important;
-                    border-color: var(--border) !important;
-                }
-
-                .custom-hot-table td {
-                    background-color: var(--card) !important;
-                    color: var(--foreground) !important;
-                    font-size: 14px !important;
-                    border-color: var(--border) !important;
-                }
-
-                .custom-hot-table .wtBorder.current {
-                    background-color: var(--primary) !important; 
-                }
-
-                .custom-hot-table .rowHeader {
-                    color: var(--muted-foreground) !important;
-                    border-right-color: var(--border) !important;
-                }
-
-                .custom-hot-table tbody tr:hover td {
-                    background-color: var(--accent) !important;
-                }
-
-                .handsontable .relative {
-                    padding: 3px !important;
-                }
-                .handsontable th, .handsontable td {
-                    position: relative;
-                }
-                @media (max-width: 640px) {
-                .handsontable .relative {
-                    padding: 1px !important;
-                }
-            }
-            `}</style>
+            <style jsx global>{tableStyles}</style>
         </div>
     );
 }

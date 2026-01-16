@@ -115,6 +115,45 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+
+.driver-active-overlay {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  opacity: 1 !important;
+  transition: all 0.3s ease;
+}
+
+
+.driver-stage {
+  background-color: transparent !important;
+  outline: 2px solid var(--primary) !important;
+  transition: all 0.3s ease !important;
+}
+
+.dark .driver-stage {
+  outline: 2px solid white !important;
+  box-shadow: 0 0 20px 5px rgb(255, 255, 255) !important;
+}
+
+.driverjs-theme {
+  background-color: var(--card) !important;
+  color: var(--card-foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  padding: 15px !important;
+}
+
+.driver-popover-btn {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 6px 12px !important;
+  font-weight: 600 !important;
+}
+
+
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

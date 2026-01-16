@@ -27,7 +27,7 @@ export function Logs({ viewMode, data }: LogsProps) {
 
   return (
     <div className={cn(
-      "gap-6",
+      "gap-4",
       viewMode === "grid" ? "grid grid-cols-12" : "flex flex-col w-full"
     )}>
       {data.map((log) => {
@@ -48,27 +48,32 @@ export function Logs({ viewMode, data }: LogsProps) {
                 viewMode === "grid" ? "flex-col" : "flex-col sm:flex-row sm:items-center gap-4 sm:gap-6"
               )}>
                 <CardHeader className={cn(viewMode === "list" ? "p-0 flex-1" : "pb-2")}>
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3 min-w-0 flex-1"> 
                       <div className={cn(
                         "p-2 rounded-md shrink-0",
                         isError ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"
                       )}>
-                        {isError ? <LuCircleAlert size={24} /> : <LuCircleCheck size={24} />}
+                        {isError ? <LuCircleAlert size={20} /> : <LuCircleCheck size={20} />}
                       </div>
 
-                      <div className="min-w-0">
-                        <CardTitle className="text-base truncate">
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="text-sm sm:text-base truncate font-bold">
                           {log.file}
                         </CardTitle>
-                        <CardDescription className="text-xs">{log.date}</CardDescription>
+                        <CardDescription className="text-[10px] sm:text-xs truncate">
+                          {log.date}
+                        </CardDescription>
                       </div>
                     </div>
 
-                    <Badge variant={isError ? "destructive" : "success"} className={cn(
-                      "capitalize shrink-0",
-                      viewMode === "list" && "hidden md:inline-flex"
-                    )}>
+                    <Badge
+                      variant={isError ? "destructive" : "success"}
+                      className={cn(
+                        "capitalize shrink-0 text-[10px] px-2 py-0",
+                        viewMode === "list" && "hidden md:inline-flex"
+                      )}
+                    >
                       {log.status}
                     </Badge>
                   </div>
@@ -98,7 +103,7 @@ export function Logs({ viewMode, data }: LogsProps) {
                 viewMode === "grid" ? "mt-auto pt-4" : "sm:p-0 w-full sm:w-auto mt-4 sm:mt-0"
               )}>
                 <Button
-                  variant="outline"
+                  variant="default"
                   size="sm"
                   className="gap-2 w-full sm:w-auto justify-center"
                   onClick={() => handleOpenDetails(log)}

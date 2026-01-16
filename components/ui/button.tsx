@@ -18,7 +18,7 @@ const buttonVariants = cva(
 
         action: "px-6 h-10 border border-border bg-background text-foreground font-semibold hover:bg-accent",
         cardAction: "border border-border/50 bg-transparent text-foreground hover:bg-accent hover:border-border transition-all duration-200",
-        tab: "h-9 px-4 rounded-md transition-all text-sm font-medium border border-transparent ",
+        tab: "h-9 px-4 rounded-md transition-all text-sm font-medium border border-transparent",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -27,8 +27,8 @@ const buttonVariants = cva(
         icon: "h-9 w-9",
       },
       isActive: {
-        true: "bg-foreground text-background shadow-sm hover:opacity-90",
-        false: "text-muted-foreground hover:bg-muted hover:text-foreground",
+        true: "bg-foreground text-background shadow-sm hover:bg-foreground/90",
+        false: "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
       },
     },
     defaultVariants: {

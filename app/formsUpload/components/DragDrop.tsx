@@ -50,7 +50,7 @@ export default function DragDrop() {
   };
 
   return (
-    <div className="w-full max-w-3xl p-6 bg-card text-card-foreground rounded-xl shadow-sm border border-border transition-colors">
+    <div id="step-upload-area" className="w-full max-w-3xl p-6 bg-card text-card-foreground rounded-xl shadow-sm border border-border transition-colors">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-foreground">Carregar Formulário</h2>
         <p className="text-sm text-muted-foreground mt-1">

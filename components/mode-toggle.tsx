@@ -4,37 +4,24 @@ import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
-import { Network } from "./network"
-import { TourApp } from "./ui/tour-app"
 
 export function ModeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return <div className="w-10 h-10" />
-
+  const { setTheme, resolvedTheme } = useTheme()
   const isDark = resolvedTheme === "dark"
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="rounded-full bg-background border-border"
-        onClick={() => setTheme(isDark ? "light" : "dark")}
-      >
-        {isDark ? (
-          <Moon className="h-5 w-5 text-white" />
-        ) : (
-          <Sun className="h-5 w-5 text-black" />
-        )}
-      </Button>
-      <Network />
-      <TourApp />
-    </div>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="rounded-full h-9 w-9 "
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      title={isDark ? "Mudar para modo claro" : "Mudar para modo escuro"}
+    >
+      {isDark ? (
+        <Moon className="h-[1.2rem] w-[1.2rem] text-amber-400" />
+      ) : (
+        <Sun className="h-[1.2rem] w-[1.2rem] text-blue-900" />
+      )}
+    </Button>
   )
 }
