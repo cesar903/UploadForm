@@ -8,15 +8,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { LuCalendar, LuUser, LuFileText, LuTriangleAlert , LuDatabase } from "react-icons/lu";
-import { LogItem } from "../type/ILogs";
+import { LuCalendar, LuUser, LuFileText, LuTriangleAlert, LuDatabase } from "react-icons/lu";
 import { cn } from "@/lib/utils";
-
-interface ModalDetailsProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  log: LogItem | null;
-}
+import { ModalDetailsProps } from "../type/IModalDetails";
 
 export function ModalDetails({ isOpen, onOpenChange, log }: ModalDetailsProps) {
   if (!log) return null;
@@ -26,8 +20,8 @@ export function ModalDetails({ isOpen, onOpenChange, log }: ModalDetailsProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg border-none shadow-2xl bg-white dark:bg-zinc-950 p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-0"><br />
-          <div className="flex items-center justify-between">
+        <DialogHeader className="p-6 pb-0">
+          <div className="flex items-center justify-between mt-4">
             <DialogTitle className="text-xl font-bold flex items-center gap-2">
               <LuFileText className="text-primary" />
               Detalhes do Upload
@@ -43,32 +37,10 @@ export function ModalDetails({ isOpen, onOpenChange, log }: ModalDetailsProps) {
 
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                <LuCalendar size={12} /> Data e Hora
-              </span>
-              <span className="text-sm font-medium">{log.date}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                <LuUser size={12} /> Usuário
-              </span>
-              <span className="text-sm font-medium">{log.user}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                <LuDatabase size={12} /> Registros
-              </span>
-              <span className="text-sm font-medium">{log.records} itens</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                <LuFileText size={12} /> Arquivo
-              </span>
-              <span className="text-sm font-medium truncate" title={log.file}>
-                {log.file}
-              </span>
-            </div>
+            <DataField label="Data e Hora" icon={<LuCalendar size={12} />} value={log.date} />
+            <DataField label="Usuário" icon={<LuUser size={12} />} value={log.user} />
+            <DataField label="Registros" icon={<LuDatabase size={12} />} value={`${log.records} itens`} />
+            <DataField label="Arquivo" icon={<LuFileText size={12} />} value={log.file} truncate />
           </div>
 
           <div className={cn(
@@ -96,5 +68,18 @@ export function ModalDetails({ isOpen, onOpenChange, log }: ModalDetailsProps) {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function DataField({ label, icon, value, truncate }: { label: string; icon: React.ReactNode; value: string; truncate?: boolean }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+        {icon} {label}
+      </span>
+      <span className={cn("text-sm font-medium", truncate && "truncate")} title={truncate ? value : undefined}>
+        {value}
+      </span>
+    </div>
   );
 }

@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 export function DraftFloatingAlert() {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  // Encolhe automaticamente após 5 segundos
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsExpanded(false);

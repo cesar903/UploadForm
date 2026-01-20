@@ -7,12 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LuCircleAlert, LuCircleCheck, LuEye } from "react-icons/lu";
-import { LogItem } from "../type/ILogs";
-
-interface LogsProps {
-  viewMode: "grid" | "list";
-  data: LogItem[];
-}
+import { LogsProps, LogItem } from "../type/ILogs";
 
 export function Logs({ viewMode, data }: LogsProps) {
 

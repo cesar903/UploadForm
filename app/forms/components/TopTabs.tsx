@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { LayoutGrid, List } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { TopTabsProps, TabMode, ViewMode } from "../types/ITopTabs";
+import { TopTabsProps, TabMode, ViewMode } from "../type/ITopTabs";
 
 export function TopTabs({ onSelect, onViewChange }: TopTabsProps) {
   const [active, setActive] = useState<TabMode>("forms");

@@ -2,7 +2,7 @@
 
 import { Check, X, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import {
     Tooltip,
@@ -11,17 +11,8 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-interface ConfirmChangeItemProps {
-    change: {
-        field: string;
-        old: any;
-        new: any;
-        originalIndex: number;
-    };
-    index: number;
-    onConfirm: (index: number) => void;
-    onRevert: (index: number) => void;
-}
+import { ConfirmChangeItemProps } from "../type/IConfirmChangeItem";
+
 
 export function ConfirmChangeItem({
     change,
@@ -48,10 +39,10 @@ export function ConfirmChangeItem({
                         <div
                             id={isFirst ? "step-card-badge" : undefined}
                             className="flex items-center gap-2"
-                        >   
+                        >
                             <Badge variant="outline" className="text-black">
                                 {change.field}
-                            </Badge> 
+                            </Badge>
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                                 Linha #{change.originalIndex + 1}
                             </span>

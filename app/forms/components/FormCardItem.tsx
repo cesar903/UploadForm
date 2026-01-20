@@ -5,12 +5,7 @@ import { ClipboardList, FileDown, Upload } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { FormItem } from "@/app/forms/types/IFormCards";
-
-interface FormCardItemProps {
-    form: FormItem;
-    viewMode: "grid" | "list";
-}
+import { FormCardItemProps } from "@/app/forms/type/IFormCards";
 
 export function FormCardItem({ form, viewMode }: FormCardItemProps) {
     return (

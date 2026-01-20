@@ -12,7 +12,7 @@ import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
     AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ErrorDashboard } from './ErrorDashboard'; // <-- Importe aqui
+import { ErrorDashboard } from './ErrorDashboard';
 import { tableStyles } from '../style/styles'
 import 'handsontable/dist/handsontable.full.min.css';
 import { textRenderer } from 'handsontable/renderers/textRenderer';

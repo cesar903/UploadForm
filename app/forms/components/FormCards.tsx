@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { FormItem } from "@/app/forms/types/IFormCards";
+import { FormItem } from "@/app/forms/type/IFormCards";
 import { Search } from "./Search";
 import { FormCardItem } from "./FormCardItem";
 

@@ -6,34 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
 
-interface ErrorDashboardProps {
-  validationErrors: any[];
-  showAllErrors: boolean;
-  setShowAllErrors: (val: boolean) => void;
-  scrollToError: (index: number) => void;
-}
+import { ErrorDashboardProps, ValidationError } from '../type/IErrorDashboard'; 
 
-export function ErrorDashboard({ validationErrors, showAllErrors, setShowAllErrors, scrollToError }: ErrorDashboardProps) {
+export function ErrorDashboard({ 
+  validationErrors, 
+  showAllErrors, 
+  setShowAllErrors, 
+  scrollToError 
+}: ErrorDashboardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const hasCritical = validationErrors.some(e => e.type === 'error');
 
-  // Função que mede se o conteúdo "transbordou" a primeira linha (40px)
   const checkOverflow = () => {
     if (containerRef.current) {
-      // scrollHeight é a altura real de todo o conteúdo interno
-      // Se for maior que 45px, significa que temos mais de uma linha de botões
       const hasMoreContent = containerRef.current.scrollHeight > 45;
       setIsOverflowing(hasMoreContent);
     }
   };
 
-  // useLayoutEffect dispara ANTES do navegador desenhar, evitando o "pulo" visual do botão
   useLayoutEffect(() => {
     checkOverflow();
   }, [validationErrors, showAllErrors]);
 
-  // Adiciona um listener para quando o usuário redimensionar a janela (ou girar o celular)
   useEffect(() => {
     window.addEventListener('resize', checkOverflow);
     return () => window.removeEventListener('resize', checkOverflow);
@@ -52,7 +47,6 @@ export function ErrorDashboard({ validationErrors, showAllErrors, setShowAllErro
           </span>
         </div>
 
-        {/* O botão de detalhes só aparece se o conteúdo não couber na linha atual */}
         {isOverflowing && (
           <Button 
             id='step-table-more' 
@@ -70,7 +64,6 @@ export function ErrorDashboard({ validationErrors, showAllErrors, setShowAllErro
         )}
       </div>
 
-      {/* Container com Ref para medição */}
       <div 
         ref={containerRef}
         className={cn(
@@ -78,7 +71,7 @@ export function ErrorDashboard({ validationErrors, showAllErrors, setShowAllErro
           showAllErrors ? "max-h-80 overflow-y-auto pr-2" : "max-h-10"
         )}
       >
-        {validationErrors.map((error, i) => (
+        {validationErrors.map((error: ValidationError, i) => (
           <TooltipProvider key={i}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -88,8 +81,8 @@ export function ErrorDashboard({ validationErrors, showAllErrors, setShowAllErro
                   size="sm"
                   onClick={() => scrollToError(error.rowIndex)}
                   className={cn(
-                    "h-8 text-xs px-3 border-dashed shrink-0",
-                    error.type === 'error' ? "border-red-500/40 text-red-700 bg-red-50/20" : "border-orange-500/40 text-orange-700 bg-orange-50/50"
+                    "h-8 text-xs px-3 shrink-0 font-bold",
+                    error.type === 'error' ? "text-red-700 bg-list" : "text-orange-700 bg-waring"
                   )}
                 >
                   <span className={cn("w-2 h-2 rounded-full mr-2", error.type === 'error' ? "bg-red-600" : "bg-orange-600")} />
@@ -108,7 +101,7 @@ export function ErrorDashboard({ validationErrors, showAllErrors, setShowAllErro
                   {error.message.split(" | ").map((msg: string, idx: number) => {
                     const isCrit = msg.toLowerCase().includes("duplicado") || msg.toLowerCase().includes("inválido");
                     return (
-                      <div key={idx} className="flex items-start gap-2">
+                      <div key={idx} className="flex items-start gap-2 animate-in fade-in slide-in-from-left-1">
                         <div className={cn("mt-1 shrink-0 w-1 h-3 rounded-full", isCrit ? "bg-red-500" : "bg-orange-500")} />
                         <div className="space-y-0.5">
                           <p className="text-[10px] uppercase font-black tracking-tight opacity-80">{isCrit ? "Erro Crítico" : "Aviso de Sistema"}</p>

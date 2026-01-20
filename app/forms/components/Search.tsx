@@ -18,10 +18,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-interface SearchProps {
-    items: { label: string; value: string }[];
-    onSelect: (value: string) => void;
-}
+import { SearchProps } from "../type/ISearch"
 
 export function Search({ items, onSelect }: SearchProps) {
     const [open, setOpen] = React.useState(false)
@@ -35,7 +32,6 @@ export function Search({ items, onSelect }: SearchProps) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-
                     className="w-full md:w-75 justify-between bg-card text-card-foreground border-border hover:bg-accent hover:text-accent-foreground shadow-sm transition-colors cursor-pointer"
                 >
                     <div className="flex items-center gap-2 truncate">
@@ -71,7 +67,6 @@ export function Search({ items, onSelect }: SearchProps) {
                                         onSelect(newValue)
                                         setOpen(false)
                                     }}
-                                    // Item de seleção com hover sutil
                                     className="cursor-pointer text-card-foreground aria-selected:bg-accent aria-selected:text-accent-foreground"
                                 >
                                     <Check

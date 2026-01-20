@@ -1,6 +1,6 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import { Toolbar } from "./toolbar/Toolbar";
-import { TourApp } from "./tourApp/components/TourApp";
+import { TourApp } from "./tourApp/TourApp";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FileProvider } from "@/app/context/FileContext";
 import "./globals.css";
