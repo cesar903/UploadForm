@@ -1,26 +1,46 @@
 "use client";
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
+import { get, set, del } from 'idb-keyval';
 
-interface FileContextType {
-    originalData: any[][];
-    tableData: any[][];
-    setTableData: (data: any[][]) => void;
-    processFile: (file: File) => Promise<void>;
-    resetData: () => void;
-}
+import { FileContextType } from './types/IFileContext';
 
 const FileContext = createContext<FileContextType | undefined>(undefined);
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
     const [originalData, setOriginalData] = useState<any[][]>([]);
     const [tableData, setTableData] = useState<any[][]>([]);
+    const [isLoadingStorage, setIsLoadingStorage] = useState(true);
+
+    useEffect(() => {
+        async function loadPersistedData() {
+            try {
+                const savedOriginal = await get('app_original_data');
+                const savedTable = await get('app_table_data');
+
+                if (savedOriginal) setOriginalData(savedOriginal);
+                if (savedTable) setTableData(savedTable);
+            } catch (error) {
+                console.error("Erro ao carregar do IndexedDB:", error);
+            } finally {
+                setIsLoadingStorage(false);
+            }
+        }
+        loadPersistedData();
+    }, []);
+
+    useEffect(() => {
+        if (!isLoadingStorage) {
+            if (originalData.length > 0) set('app_original_data', originalData);
+            if (tableData.length > 0) set('app_table_data', tableData);
+        }
+    }, [originalData, tableData, isLoadingStorage]);
 
     const processFile = (file: File): Promise<void> => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 try {
                     const data = e.target?.result;
                     const workbook = XLSX.read(data, { type: 'binary' });
@@ -34,8 +54,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
                     }) as any[][];
 
                     if (rawData.length === 0) {
-                        setOriginalData([]);
-                        setTableData([]);
+                        await resetData();
                         return resolve();
                     }
 
@@ -51,7 +70,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
                         .map(row => validColumnIndices.map(index => row[index]))
                         .filter(row => row.some(cell => String(cell).trim() !== ""));
 
-                    setOriginalData(JSON.parse(JSON.stringify(cleanedData)));
+                    const clonedOriginal = JSON.parse(JSON.stringify(cleanedData));
+
+                    setOriginalData(clonedOriginal);
                     setTableData(cleanedData);
 
                     resolve();
@@ -64,9 +85,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const resetData = () => {
+    const resetData = async () => {
         setOriginalData([]);
         setTableData([]);
+        await del('app_original_data');
+        await del('app_table_data');
     };
 
     return (
@@ -75,7 +98,8 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             tableData,
             setTableData,
             processFile,
-            resetData
+            resetData,
+            isLoadingStorage
         }}>
             {children}
         </FileContext.Provider>

@@ -31,14 +31,14 @@ export function TopTabs({ onSelect, onViewChange }: TopTabsProps) {
         >
           Formulários
         </Button>
-        <Button
-          id="step-history-tab"
-          variant="tab"
-          isActive={active === "logs"}
-          onClick={() => handleTabClick("logs")}
-        >
-          Histórico
-        </Button>
+          <Button
+            variant="tab"
+            isActive={active === "logs"}
+            onClick={() => handleTabClick("logs")}
+            id="step-history-tab"
+          >
+            Histórico
+          </Button>
 
       </div>
 
@@ -46,7 +46,7 @@ export function TopTabs({ onSelect, onViewChange }: TopTabsProps) {
         <div id="step-view-mode" className="flex items-center bg-muted/50 p-1 rounded-md border border-border">
           <button
             onClick={() => handleViewMode("grid")}
-            title="Visualização em Grade" 
+            title="Visualização em Grade"
             className={cn(
               "p-1.5 rounded-sm transition-all duration-200 mr-1",
               viewMode === "grid"

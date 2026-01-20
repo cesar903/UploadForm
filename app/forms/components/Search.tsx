@@ -31,10 +31,11 @@ export function Search({ items, onSelect }: SearchProps) {
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button
+                    id="step-select-search"
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    // Aplicando as cores do CARD para o botão de busca
+
                     className="w-full md:w-75 justify-between bg-card text-card-foreground border-border hover:bg-accent hover:text-accent-foreground shadow-sm transition-colors cursor-pointer"
                 >
                     <div className="flex items-center gap-2 truncate">
@@ -48,12 +49,11 @@ export function Search({ items, onSelect }: SearchProps) {
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            
-            {/* O conteúdo do Popover também herda o estilo do card */}
+
             <PopoverContent className="w-75 p-0 bg-card border-border shadow-xl">
                 <Command className="bg-card">
-                    <CommandInput 
-                        placeholder="Digite o nome..." 
+                    <CommandInput
+                        placeholder="Digite o nome..."
                         className="text-card-foreground"
                     />
                     <CommandList className="border-t border-border">

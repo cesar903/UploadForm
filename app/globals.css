@@ -44,6 +44,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --color-list: var(--list);
 }
 
 :root {
@@ -79,6 +80,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --list: oklch(63.153% 0.23566 27.327 / 0.068);
 }
 
 .dark {
@@ -113,6 +115,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --list: oklch(63.153% 0.23566 27.327 / 0.068);
 }
 
 
@@ -152,6 +155,56 @@
 }
 
 
+.handsontable td.cell-error,
+.custom-hot-table td.cell-error,
+.handsontable tr td.cell-error,
+.handsontable td.cell-error:hover {
+  background-color: #f04040 !important;
+  color: #f7f1f1 !important;
+  font-weight: 600 !important;
+}
+
+.handsontable tr:hover td.cell-error,
+.custom-hot-table tr:hover td.cell-error {
+  background-color: #f04040 !important;
+  color: #f7f1f1 !important;
+}
+
+
+.handsontable td.cell-warning,
+.custom-hot-table td.cell-warning,
+.handsontable tr td.cell-warning {
+  background-color: #f5b56c !important;
+  color: #9a3412 !important;
+  font-weight: 600 !important;
+}
+
+.handsontable tr:hover td.cell-warning,
+.custom-hot-table tr:hover td.cell-warning,
+.handsontable td.cell-warning:hover {
+  background-color: #f5b56c !important;
+  color: #9a3412 !important;
+}
+
+
+
+.driverjs-theme .driver-popover-next-btn {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  @apply border-none shadow-md rounded-md px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90;
+  text-shadow: none !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+.driverjs-theme .driver-popover-prev-btn {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+  border: 1px solid var(--border) !important;
+
+  @apply rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent;
+
+  text-shadow: none !important;
+}
 
 
 @layer base {
