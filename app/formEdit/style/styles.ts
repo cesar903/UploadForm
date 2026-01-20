@@ -1,4 +1,3 @@
-// style.ts
 import css from 'styled-jsx/css';
 
 export const tableStyles = css.global`

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CircleHelp } from "lucide-react"; // Corrigindo para CircleHelp que é o padrão do Lucide
+import { CircleHelp } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,

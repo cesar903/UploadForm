@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useFile } from "@/app/context/FileContext";
 import { AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useMemo, useState, useEffect } from "react";
 import { SuccessModal } from "@/app/modalSuccess/components/Dialog";
 import { cn } from "@/lib/utils";
@@ -19,7 +18,7 @@ export default function Confirm({ onBackToEdit }: ConfirmProps) {
     const { tableData, setTableData, resetData } = useFile();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const CRITICAL_FIELDS = ["ID", "EMAIL", "PHONE"]; 
+    const CRITICAL_FIELDS = ["ID", "EMAIL", "PHONE"];
 
     const [initialStats, setInitialStats] = useState({
         criticalRecords: 0,
@@ -36,91 +35,74 @@ export default function Confirm({ onBackToEdit }: ConfirmProps) {
             field => field.toUpperCase().trim() === key.toUpperCase().trim()
         );
 
-    const individualChanges = useMemo(() => {
-        const changes: any[] = [];
+    const groupedChanges = useMemo(() => {
+        const changesMap = new Map<number, any>();
         if (!tableData?.length) return [];
 
         tableData.forEach((record: any) => {
             if (typeof record !== "object" || Array.isArray(record)) return;
 
+            const rowChanges: any[] = [];
             Object.entries(record).forEach(([key, diff]: [string, any]) => {
                 if (isCriticalField(key) && diff) {
                     const valOld = String(diff.old ?? "").trim();
                     const valNew = String(diff.new ?? "").trim();
-
                     if (valOld !== valNew) {
-                        changes.push({
-                            field: key,
-                            old: diff.old,
-                            new: diff.new,
-                            originalIndex: record._originalIndex,
-                        });
+                        rowChanges.push({ field: key, old: diff.old, new: diff.new });
                     }
                 }
             });
+
+            if (rowChanges.length > 0) {
+                changesMap.set(record._originalIndex, {
+                    originalIndex: record._originalIndex,
+                    changes: rowChanges,
+                });
+            }
         });
-
-        return changes;
-    }, [tableData]);
-
-    const filteredMergeData = useMemo(() => {
-        return tableData.filter((record: any) => {
-            return Object.entries(record).some(([key, diff]: [string, any]) => {
-                if (!isCriticalField(key) || !diff) return false;
-
-                const valOld = String(diff.old ?? "").trim();
-                const valNew = String(diff.new ?? "").trim();
-
-                return valOld !== valNew;
-            });
-        });
+        return Array.from(changesMap.values());
     }, [tableData]);
 
     useEffect(() => {
-        if (individualChanges.length && initialStats.totalChanges === 0) {
+        if (groupedChanges.length && initialStats.totalChanges === 0) {
             setInitialStats({
-                criticalRecords: filteredMergeData.length,
-                totalChanges: individualChanges.length,
+                criticalRecords: groupedChanges.length,
+                totalChanges: groupedChanges.reduce((acc, curr) => acc + curr.changes.length, 0),
             });
         }
-    }, [individualChanges, filteredMergeData, initialStats.totalChanges]);
+    }, [groupedChanges, initialStats.totalChanges]);
 
-    useEffect(() => {
-        window.dispatchEvent(new Event("tour-dom-updated"));
-    }, [individualChanges.length]);
+    const handleGoToLine = (originalIndex: number) => {
+        localStorage.setItem("scroll_to_row", originalIndex.toString());
+        onBackToEdit();
+    };
 
-    const revertChange = (index: number) => {
-        const change = individualChanges[index];
-        if (!change) return;
+    const confirmRow = (originalIndex: number) => {
+        const rowData = groupedChanges.find(g => g.originalIndex === originalIndex);
+        if (!rowData) return;
 
         const newData = [...tableData] as any[];
-        const recordIndex = newData.findIndex(
-            r => r._originalIndex === change.originalIndex
-        );
+        const recordIndex = newData.findIndex(r => r._originalIndex === originalIndex);
 
         if (recordIndex !== -1) {
-            newData[recordIndex][change.field] = {
-                old: change.old,
-                new: change.old,
-            };
+            rowData.changes.forEach((c: any) => {
+                newData[recordIndex][c.field] = { old: c.new, new: c.new };
+            });
             setTableData(newData);
         }
     };
 
-    const confirmChange = (index: number) => {
-        const change = individualChanges[index];
-        if (!change) return;
+    const revertRow = (originalIndex: number) => {
+        const rowData = groupedChanges.find(g => g.originalIndex === originalIndex);
+        if (!rowData) return;
 
         const newData = [...tableData] as any[];
-        const recordIndex = newData.findIndex(
-            r => r._originalIndex === change.originalIndex
-        );
+        const recordIndex = newData.findIndex(r => r._originalIndex === originalIndex);
 
         if (recordIndex !== -1) {
-            newData[recordIndex][change.field] = {
-                old: change.new,
-                new: change.new,
-            };
+            rowData.changes.forEach((c: any) => {
+                newData[recordIndex][c.field] = { old: c.old, new: c.old };
+            });
             setTableData(newData);
         }
     };
@@ -137,95 +119,78 @@ export default function Confirm({ onBackToEdit }: ConfirmProps) {
         setIsSubmitting(false);
     };
 
+    const handleUpdateField = (originalIndex: number, field: string, newValue: string) => {
+        const newData = [...tableData] as any[];
+        const recordIndex = newData.findIndex(r => r._originalIndex === originalIndex);
+
+        if (recordIndex !== -1) {
+            const currentDiff = newData[recordIndex][field];
+            newData[recordIndex][field] = {
+                ...currentDiff,
+                new: newValue
+            };
+            setTableData(newData);
+        }
+    };
+
     return (
         <div className="w-full max-w-6xl p-6 bg-card rounded-xl shadow-sm border">
             <div className="mb-8">
-                <h1 className="text-2xl font-bold">
-                    Confirmar Alterações Críticas
-                </h1>
-                <p className="text-muted-foreground italic text-sm">
-                    Apenas campos de identificação.
-                </p>
+                <h1 className="text-2xl font-bold">Confirmar Alterações Críticas</h1>
+                <p className="text-muted-foreground italic text-sm">Apenas campos de identificação.</p>
             </div>
 
-            <div
-                id="step-security-summary"
-                className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-8 flex gap-3"
-            >
+            <div id="step-security-summary" className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-8 flex gap-3">
                 <div className="bg-blue-500 p-2 rounded-full flex items-center justify-center">
                     <Info className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                    <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                        Resumo de segurança
-                    </p>
+                    <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">Resumo de segurança</p>
                     <p className="text-xs text-blue-500 dark:text-blue-300">
-                        {individualChanges.length ? `Faltam ${individualChanges.length} itens...` : "Não há confirmações pendentes."}
+                        {groupedChanges.length ? `Faltam ${groupedChanges.length} registros pendentes...` : "Não há confirmações pendentes."}
                     </p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 gap-2">
                 <AnimatePresence mode="popLayout">
-                    {individualChanges.map((change, index) => (
+                    {groupedChanges.map((record, index) => (
                         <ConfirmChangeItem
-                            key={`${change.originalIndex}-${change.field}`}
-                            change={change}
+                            key={record.originalIndex}
+                            record={record}
                             index={index}
-                            onConfirm={confirmChange}
-                            onRevert={revertChange}
+                            onConfirm={confirmRow}
+                            onRevert={revertRow}
+                            onGoToLine={handleGoToLine}
+                            onUpdateField={handleUpdateField}
                         />
                     ))}
                 </AnimatePresence>
             </div>
 
             <div className="pt-6 flex flex-col sm:flex-row justify-end gap-4">
-                <Button variant="outline" onClick={onBackToEdit} className="cursor-pointer">
-                    Corrigir na Tabela
-                </Button>
-
+                <Button variant="outline" onClick={onBackToEdit}>Corrigir na Tabela</Button>
                 <Button
                     id="step-final-btn"
                     onClick={handleFinalMerge}
-                    disabled={individualChanges.length > 0 || isSubmitting}
-                    className={cn(
-                        "px-10 font-bold h-11",
-                        individualChanges.length
-                            ? "bg-muted text-muted-foreground cursor-not-allowed"
-                            : "bg-primary text-primary-foreground"
-                    )}
+                    disabled={groupedChanges.length > 0 || isSubmitting}
+                    className={cn("px-10 font-bold h-11", groupedChanges.length ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground")}
                 >
-                    {individualChanges.length
-                        ? `Revise as pendências (${individualChanges.length})`
-                        : "Confirmar Envio"}
+                    {groupedChanges.length ? `Revise as pendências (${groupedChanges.length})` : "Confirmar Envio"}
                 </Button>
             </div>
 
             <SuccessModal
                 isOpen={modalConfig.isOpen}
-                onOpenChange={open =>
-                    setModalConfig(prev => ({ ...prev, isOpen: open }))
-                }
+                onOpenChange={open => setModalConfig(prev => ({ ...prev, isOpen: open }))}
                 type={modalConfig.type}
-                title={
-                    modalConfig.type === "success"
-                        ? "Realizado com Sucesso!"
-                        : "Falha no Envio!"
-                }
-                description={
-                    modalConfig.type === "success"
-                        ? "Dados validados e alterações aplicadas."
-                        : "Erro ao processar."
-                }
-                stats={
-                    modalConfig.type === "success"
-                        ? [
-                            { label: "Registros Críticos", value: initialStats.criticalRecords },
-                            { label: "Alterações Totais", value: initialStats.totalChanges },
-                            { label: "Tempo", value: "1.2s" },
-                        ]
-                        : []
-                }
+                title={modalConfig.type === "success" ? "Realizado com Sucesso!" : "Falha no Envio!"}
+                description={modalConfig.type === "success" ? "Dados validados e alterações aplicadas." : "Erro ao processar."}
+                stats={modalConfig.type === "success" ? [
+                    { label: "Registros Críticos", value: initialStats.criticalRecords },
+                    { label: "Alterações Totais", value: initialStats.totalChanges },
+                    { label: "Tempo", value: "1.2s" },
+                ] : []}
                 primaryAction={{
                     label: modalConfig.type === "success" ? "Concluído" : "Tentar Novamente",
                     onClick: () => {

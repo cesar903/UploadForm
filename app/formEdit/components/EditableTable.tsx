@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useRef, useMemo, useState } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { useFile } from "@/app/context/FileContext";
 import { HotTable } from '@handsontable/react';
+import Handsontable from 'handsontable';
 import { registerAllModules } from 'handsontable/registry';
 import { HyperFormula } from 'hyperformula';
 import { Button } from "@/components/ui/button";
@@ -21,11 +22,33 @@ import { cn } from '@/lib/utils';
 registerAllModules();
 
 export default function EditableTable() {
-    const hotTableComponent = useRef<HotTable>(null);
+    const hotTableComponent = useRef<any>(null);
     const { originalData, tableData, setTableData, isLoadingStorage } = useFile();
     const [isNavigating, setIsNavigating] = useState(false);
     const router = useRouter();
     const [showAllErrors, setShowAllErrors] = useState(false);
+
+    useEffect(() => {
+        const targetRow = localStorage.getItem("scroll_to_row");
+        if (targetRow && hotTableComponent.current) {
+            const rowIndex = parseInt(targetRow);
+            const timer = setTimeout(() => {
+                const hot = hotTableComponent.current?.hotInstance;
+                if (hot && typeof hot.scrollViewportTo === 'function') {
+                    try {
+                        hot.scrollViewportTo(rowIndex, 0);
+                        hot.selectCell(rowIndex, 0);
+                        hot.listen();
+                    } catch (err) {
+                        console.warn("Handsontable ainda não está pronto para scroll:", err);
+                    }
+                }
+                localStorage.removeItem("scroll_to_row");
+            }, 150); 
+
+            return () => clearTimeout(timer);
+        }
+    }, [tableData]);
 
     const currentHeaders = useMemo(() => {
         return originalData.length > 0 ? originalData[0] : (tableData[0] || []);
@@ -34,7 +57,7 @@ export default function EditableTable() {
     const bodyData = useMemo(() => {
         if (!tableData || tableData.length === 0) return [];
         if (isNavigating && hotTableComponent.current) {
-            const currentData = hotTableComponent.current.hotInstance?.getData();
+            const currentData = (hotTableComponent.current as any)?.hotInstance.getData();
             if (currentData) return currentData;
         }
         const firstRow = tableData[1];
@@ -58,7 +81,7 @@ export default function EditableTable() {
             if (type === 'error') rowErrorsMap[rowIndex].type = 'error';
         };
 
-        bodyData.forEach((row, index) => {
+        bodyData.forEach((row: any[], index: number) => {
             const emailValue = String(row[emailColIndex] || "").trim().toLowerCase();
             if (emailColIndex !== -1 && emailValue !== "") {
                 if (!emailRegex.test(emailValue)) addError(index, `E-mail com formato inválido: "${emailValue}"`, 'error');
@@ -72,7 +95,7 @@ export default function EditableTable() {
             }
         });
 
-        emailMap.forEach((indices) => {
+        emailMap.forEach((indices: number[]) => {
             if (indices.length > 1) {
                 indices.forEach(idx => {
                     dupSet.add(idx);
@@ -91,7 +114,7 @@ export default function EditableTable() {
     }, [bodyData, currentHeaders, originalData]);
 
     const scrollToError = (rowIndex: number) => {
-        const hotInstance = hotTableComponent.current?.hotInstance;
+        const hotInstance = (hotTableComponent.current as any)?.hotInstance;
         if (hotInstance) {
             const emailColIndex = currentHeaders.findIndex(h => h?.toUpperCase().trim() === "EMAIL");
             const targetCol = emailColIndex !== -1 ? emailColIndex : 0;
@@ -102,7 +125,7 @@ export default function EditableTable() {
     };
 
     const handleConfirm = () => {
-        const hotInstance = hotTableComponent.current?.hotInstance;
+        const hotInstance = (hotTableComponent.current as any)?.hotInstance;
         if (!hotInstance || !originalData || originalData.length === 0) return;
 
         setIsNavigating(true);
@@ -110,7 +133,7 @@ export default function EditableTable() {
         const headers = originalData[0];
         const originalBody = originalData.slice(1);
 
-        const diffData = updatedBody.map((row, rowIndex) => {
+        const diffData = updatedBody.map((row: any[], rowIndex: number) => {
             const originalRow = originalBody[rowIndex] || headers.map(() => "");
             if (JSON.stringify(row) === JSON.stringify(originalRow)) return null;
 
@@ -133,7 +156,7 @@ export default function EditableTable() {
 
     const handleReset = () => setTableData(JSON.parse(JSON.stringify(originalData)));
 
-    const emailRenderer = (instance: any, td: HTMLElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) => {
+    const emailRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) => {
         textRenderer(instance, td, row, col, prop, value, cellProperties);
         const emailValue = String(value || "").trim();
         const isValidFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
@@ -142,7 +165,7 @@ export default function EditableTable() {
         else td.classList.remove('cell-error');
     };
 
-    const idRenderer = (instance: any, td: HTMLElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) => {
+    const idRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) => {
         textRenderer(instance, td, row, col, prop, value, cellProperties);
         const currentValue = String(value || "").trim();
         const originalValue = String(originalData[row + 1]?.[col] || "").trim();
@@ -225,7 +248,7 @@ export default function EditableTable() {
                             }}
                             afterChange={(changes) => {
                                 if (!changes) return;
-                                const hotInstance = hotTableComponent.current?.hotInstance;
+                                const hotInstance = (hotTableComponent.current as any)?.hotInstance;
                                 if (hotInstance) {
                                     const updatedData = hotInstance.getData();
                                     setTableData([currentHeaders, ...updatedData]);

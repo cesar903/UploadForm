@@ -5,7 +5,7 @@ import "driver.js/dist/driver.css";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useFile } from "@/app/context/FileContext";
-import confetti from "canvas-confetti"; // Importar a biblioteca
+import confetti from "canvas-confetti"; 
 
 export function TourApp() {
     const pathname = usePathname();
